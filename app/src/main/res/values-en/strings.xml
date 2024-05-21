@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Travel Taipei</string>
+    <string name="dialog_language_title">Choose Language</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="latest_news">Latest News</string>
+    <string name="travel_attractions">Travel Attractions</string>
+    <string name="taipei_attractions">Taipei Attractions 1/</string>
+</resources>

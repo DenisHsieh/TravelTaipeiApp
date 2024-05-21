@@ -2,6 +2,7 @@ package com.example.traveltaipeiapp.common
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
     protected abstract fun inflateLayout(inflater: LayoutInflater, container: ViewGroup?): T
     protected abstract fun initViews()
     protected abstract fun initObserve()
+    protected abstract fun changeLanguage()
 
     private var _binding: T? = null
     protected val binding get() = _binding!!
@@ -29,6 +31,7 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -53,9 +56,5 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
     override fun onDetach() {
         actionBar = null
         super.onDetach()
-    }
-
-    protected fun changeLanguage() {
-
     }
 }

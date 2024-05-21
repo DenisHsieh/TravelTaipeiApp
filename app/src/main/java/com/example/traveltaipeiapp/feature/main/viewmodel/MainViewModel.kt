@@ -8,6 +8,8 @@ import com.example.traveltaipeiapp.api.model.Attractions
 import com.example.traveltaipeiapp.api.model.News
 import com.example.traveltaipeiapp.common.BaseViewModel
 import com.example.traveltaipeiapp.repository.MainRepository
+import com.example.traveltaipeiapp.util.LanguageUtil
+import com.example.traveltaipeiapp.util.SharedPreferencesUtil
 import com.example.traveltaipeiapp.util.SingleLiveEventV2
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -18,11 +20,15 @@ class MainViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel() {
 
+    fun changeLanguage(lang: String) {
+        SharedPreferencesUtil.putAppLanguage(lang)
+    }
+
     val newsLd = SingleLiveEventV2<News?>()
     fun getNewsData(apiService: ApiService) = viewModelScope.launch(dispatcher) {
             Log.d(TAG, "getNewsData...")
 
-            val response = mainRepository.getNewsData(apiService)
+            val response = mainRepository.getNewsData(LanguageUtil.getApiLanguage(), apiService)
             if (response.isSuccessful) {
                 val newsData = response.body()
                 // update liveData
@@ -37,7 +43,7 @@ class MainViewModel(
     fun getAttractionsData(apiService: ApiService) = viewModelScope.launch(dispatcher) {
         Log.d(TAG, "getAttractionsData...")
 
-        val response = mainRepository.getAttractionsData(apiService)
+        val response = mainRepository.getAttractionsData(LanguageUtil.getApiLanguage(), apiService)
         if (response.isSuccessful) {
             val attractionsData = response.body()
             _attractionsLd.postValue(attractionsData)

@@ -9,7 +9,7 @@ object FragmentManagerProvider {
         this.fragmentManager = fragmentManager
     }
 
-    fun getFragmentManager(): FragmentManager? {
+    fun getFragmentManager(): FragmentManager {
         return fragmentManager ?: throw IllegalStateException("FragmentManager is null")
     }
 }

@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/light_blue_A400"
-        app:menu="@menu/main"
-        app:title="悠遊台北"
+        app:title="@string/app_name"
         app:titleCentered="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,17 +45,17 @@
                     android:id="@+id/taipeiViewpointNumberTv"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="台北市景點"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ignore="@string/taipei_attractions"/>
 
                 <Button
                     android:id="@+id/latestNewsBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="最新消息"
+                    android:text="@string/latest_news"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/taipeiViewpointNumberTv" />
 
@@ -69,11 +68,11 @@
                     app:layout_constraintStart_toStartOf="parent"/>
 
                 <Button
-                    android:id="@+id/AttractionsBtn"
+                    android:id="@+id/attractionsBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="遊憩景點"
+                    android:text="@string/travel_attractions"
                     app:layout_constraintTop_toBottomOf="@+id/latestNewsRecyclerView"
                     app:layout_constraintStart_toStartOf="parent"/>
 
@@ -82,12 +81,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/AttractionsBtn"
+                    app:layout_constraintTop_toBottomOf="@+id/attractionsBtn"
                     app:layout_constraintStart_toStartOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

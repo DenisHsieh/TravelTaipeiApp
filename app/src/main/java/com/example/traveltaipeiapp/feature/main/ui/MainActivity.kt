@@ -1,16 +1,19 @@
 package com.example.traveltaipeiapp.feature.main.ui
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.traveltaipeiapp.R
 import com.example.traveltaipeiapp.TtApplication
 import com.example.traveltaipeiapp.api.ApiService
 import com.example.traveltaipeiapp.common.BaseActivity
+import com.example.traveltaipeiapp.common.FragmentManagerProvider
 import com.example.traveltaipeiapp.databinding.ActivityMainBinding
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModel
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModelFactory

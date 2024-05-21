@@ -49,6 +49,12 @@ class AttractionsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             .load(photoUrl)
                             .placeholder(R.mipmap.ic_launcher)
                             .into(photoIv)
+                    } else {
+                        val placeholderUrl = "https://placehold.co/600x400.png"
+                        Glide.with(holder.itemView.context)
+                            .load(placeholderUrl)
+                            .apply(RequestOptions.overrideOf(200, 150))
+                            .into(photoIv)
                     }
                 }
             }

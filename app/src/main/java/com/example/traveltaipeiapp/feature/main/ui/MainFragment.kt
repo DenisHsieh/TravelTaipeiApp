@@ -1,13 +1,17 @@
 package com.example.traveltaipeiapp.feature.main.ui
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextMenu
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
@@ -15,12 +19,16 @@ import com.example.traveltaipeiapp.R
 import com.example.traveltaipeiapp.api.model.AttractionItem
 import com.example.traveltaipeiapp.api.model.NewsItem
 import com.example.traveltaipeiapp.common.BaseFragment
+import com.example.traveltaipeiapp.common.getLocalString
 import com.example.traveltaipeiapp.databinding.FragmentMainBinding
 import com.example.traveltaipeiapp.feature.main.ui.MainActivity.Companion.mainRepository
 import com.example.traveltaipeiapp.feature.main.ui.recylerview.AttractionsAdapter
 import com.example.traveltaipeiapp.feature.main.ui.recylerview.NewsAdapter
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModel
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModelFactory
+import com.example.traveltaipeiapp.util.LanguageUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.util.Locale
 
 class MainFragment : BaseFragment<FragmentMainBinding>() {
 
@@ -32,21 +40,37 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         MainViewModelFactory(mainRepository)
     }
 
-    override fun onCreateContextMenu(
-        menu: ContextMenu,
-        v: View,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-        val menuInflater = MenuInflater(activity)
-        menuInflater.inflate(R.menu.main, menu)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.toolbarSpace.inflateMenu(R.menu.main)
+        binding.toolbarSpace.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_change_language -> {
+                    changeLanguage()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        showProgressBar()
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_change_language -> changeLanguage()
-        }
-        return super.onContextItemSelected(item)
+    override fun changeLanguage() {
+        Log.d(TAG, "changeLanguage...")
+        val items = arrayOf(LanguageUtil.LANGUAGE_ZH_TW, LanguageUtil.LANGUAGE_EN)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(requireContext().getLocalString(R.string.dialog_language_title))
+            .setItems(items) { dialog: DialogInterface?, which: Int ->
+                when (items[which]) {
+                    LanguageUtil.LANGUAGE_ZH_TW -> model.changeLanguage(Locale.TRADITIONAL_CHINESE.toLanguageTag())
+                    else -> model.changeLanguage(Locale.ENGLISH.toLanguageTag())
+                }
+                activity?.recreate()
+            }.show()
+
     }
 
     override fun inflateLayout(
@@ -76,6 +100,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             attractionsRecyclerView.layoutManager = layoutManager02
             attractionsRecyclerView.setRecycledViewPool(viewPool02)
             attractionsRecyclerView.adapter = attractionsAdapter
+
+            toolbarSpace.setTitle(requireContext().getLocalString(R.string.app_name))
+            latestNewsBtn.text = requireContext().getLocalString(R.string.latest_news)
+            attractionsBtn.text = requireContext().getLocalString(R.string.travel_attractions)
         }
     }
 
@@ -86,19 +114,20 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             val newsDataList = item!!.data
             if (newsDataList.isNotEmpty()) {
                 newsAdapter?.dataList = getNewsData(newsDataList)
+                hideProgressBar()
             }
         }
         model.attractionsLd.observe(viewLifecycleOwner) { item ->
             val number = item!!.total
             binding.apply {
-                taipeiViewpointNumberTv.text = "台北市景點 1/${number}"
+                taipeiViewpointNumberTv.text = requireContext().getLocalString(R.string.taipei_attractions).plus(number)
             }
 
             val attractionsDataList = item.data
             if (attractionsDataList.isNotEmpty()) {
                 attractionsAdapter?.dataList = getAttractionsData(attractionsDataList)
+                hideProgressBar()
             }
-
         }
 
         val apiService = (activity as MainActivity).apiService
@@ -133,6 +162,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             introduction = introduction.trim().substring(0, 50) + "..."
         }
         return mutableListOf(data0, data1, data2)
+    }
+
+    private fun showProgressBar() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar.visibility = View.GONE
     }
 
 }

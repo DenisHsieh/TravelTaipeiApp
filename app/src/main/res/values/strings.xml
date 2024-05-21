@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">TravelTaipeiApp</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">悠遊台北</string>
+    <string name="dialog_language_title">選擇語言</string>
+    <string name="ok">確認</string>
+    <string name="cancel">取消</string>
+    <string name="latest_news">最新消息</string>
+    <string name="travel_attractions">旅遊景點</string>
+    <string name="taipei_attractions">台北市景點 1/</string>
 </resources>
