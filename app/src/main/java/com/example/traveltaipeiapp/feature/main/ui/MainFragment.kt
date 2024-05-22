@@ -16,6 +16,7 @@ import com.example.traveltaipeiapp.api.ApiService
 import com.example.traveltaipeiapp.api.model.AttractionItem
 import com.example.traveltaipeiapp.api.model.NewsItem
 import com.example.traveltaipeiapp.common.BaseFragment
+import com.example.traveltaipeiapp.common.ClickListener
 import com.example.traveltaipeiapp.common.getLocalString
 import com.example.traveltaipeiapp.databinding.FragmentMainBinding
 import com.example.traveltaipeiapp.feature.main.ui.MainActivity.Companion.mainRepository
@@ -82,7 +83,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     override fun initViews() {
-        newsAdapter = NewsAdapter(object : NewsAdapter.ClickListener {
+        newsAdapter = NewsAdapter(object : ClickListener {
             override fun onItemClick(v: View, position: Int) {
                 val newsItem = newsAdapter?.getNewsItemAtPosition(position)
                 if (newsItem != null) {
@@ -91,7 +92,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
 
         })
-        attractionsAdapter = AttractionsAdapter()
+        attractionsAdapter = AttractionsAdapter(object : ClickListener {
+            override fun onItemClick(v: View, position: Int) {
+                val attractionItem = attractionsAdapter?.getNewsItemAtPosition(position)
+                if (attractionItem != null) {
+                    navigateToAttractionFragment(attractionItem)
+                }
+            }
+        })
 
         val layoutManager01 = LinearLayoutManager(this.context)
         val viewPool01 = RecycledViewPool()
@@ -193,7 +201,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         val data1 = attractionsDataList[3].apply {
             introduction = introduction.trim().substring(0, 50) + "..."
         }
-        val data2 = attractionsDataList[4].apply {
+        val data2 = attractionsDataList[11].apply {
             introduction = introduction.trim().substring(0, 50) + "..."
         }
         return mutableListOf(data0, data1, data2)
@@ -209,9 +217,36 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     fun navigateToWebViewFragment(url: String) {
         if (url.isNotBlank()) {
-            val bundle = bundleOf("url" to url)
+            val bundle = bundleOf("url" to url, "title" to "")
             findNavController().navigate(R.id.action_mainFragment_to_webviewFragment, bundle)
         }
+    }
+
+    fun navigateToAttractionFragment(item: AttractionItem) {
+        findNavController().navigate(R.id.action_mainFragment_to_attractionFragment, getBundleData(item))
+    }
+
+    private fun getBundleData(item: AttractionItem): Bundle {
+        val imageSrc = if (item.images.isNotEmpty()) {
+            item.images[0].src
+        } else {
+            ""
+        }
+
+        val website = if (item.links.isNotEmpty()) {
+            item.links[0].src
+        } else {
+            ""
+        }
+
+        return bundleOf(
+            "name" to item.name,
+            "imageSrc" to imageSrc,
+            "openTime" to item.open_time,
+            "address" to item.address,
+            "tel" to item.tel,
+            "website" to website,
+            "description" to item.introduction)
     }
 
 }

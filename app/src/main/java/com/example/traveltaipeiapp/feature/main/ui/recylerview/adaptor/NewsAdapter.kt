@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.traveltaipeiapp.api.model.NewsItem
+import com.example.traveltaipeiapp.common.ClickListener
 import com.example.traveltaipeiapp.databinding.ListItemNewsBinding
 
 class NewsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -54,8 +55,5 @@ class NewsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<Recyc
         return dataList[position]
     }
 
-    interface ClickListener {
-        fun onItemClick(v: View, position: Int)
-    }
 }
 

@@ -1,6 +1,8 @@
 package com.example.traveltaipeiapp.api.model
 
-data class AttractionItem(
+import java.io.Serializable
+
+data class AttractionItem (
     val id: Int,
     val name: String,
     val name_zh: String,
@@ -29,4 +31,4 @@ data class AttractionItem(
     val friendly: List<Friendly>,
     val images: List<Image>,
     val links: List<Link>
-)
+) : Serializable

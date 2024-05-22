@@ -15,10 +15,24 @@
             app:destination="@id/webviewFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_mainFragment_to_attractionFragment"
+            app:destination="@id/attractionFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/webviewFragment"
         android:name="com.example.traveltaipeiapp.feature.main.ui.WebviewFragment"
         android:label="fragment_webview"
         tools:layout="@layout/fragment_webview" />
+    <fragment
+        android:id="@+id/attractionFragment"
+        android:name="com.example.traveltaipeiapp.feature.main.ui.AttractionFragment"
+        android:label="fragment_attraction"
+        tools:layout="@layout/fragment_attraction" >
+        <action
+            android:id="@+id/action_attractionFragment_to_webviewFragment"
+            app:destination="@id/webviewFragment" />
+    </fragment>
 </navigation>

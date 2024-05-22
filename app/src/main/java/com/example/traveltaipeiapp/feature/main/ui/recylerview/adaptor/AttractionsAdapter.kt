@@ -9,9 +9,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.traveltaipeiapp.R
 import com.example.traveltaipeiapp.api.model.AttractionItem
+import com.example.traveltaipeiapp.common.ClickListener
 import com.example.traveltaipeiapp.databinding.ListItemAttractionsBinding
 
-class AttractionsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AttractionsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val TAG = this.javaClass.simpleName
 
@@ -57,9 +58,16 @@ class AttractionsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             .into(photoIv)
                     }
                 }
+                holder.binding.attractionItem.setOnClickListener {
+                    clickListener.onItemClick(holder.binding.attractionItem, position)
+                }
             }
         }
     }
 
     override fun getItemCount(): Int = dataList.size
+
+    fun getNewsItemAtPosition(position: Int): AttractionItem {
+        return dataList[position]
+    }
 }

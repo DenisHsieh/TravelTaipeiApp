@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.traveltaipeiapp.R
 import com.example.traveltaipeiapp.common.BaseFragment
+import com.example.traveltaipeiapp.common.FragmentManagerProvider
 import com.example.traveltaipeiapp.databinding.FragmentWebviewBinding
 import com.example.traveltaipeiapp.feature.main.ui.MainActivity.Companion.mainRepository
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModel
@@ -24,6 +25,7 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
 
     private val TAG = this.javaClass.simpleName
     private var url: String? = "https://www.google.com.tw/"
+    private var title: String? = ""
 
     override val model: MainViewModel by activityViewModels{
         MainViewModelFactory(mainRepository)
@@ -39,6 +41,7 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         url = arguments?.getString("url")
+        title = arguments?.getString("title", "")
         Log.d(TAG, "onCreate: ${url}")
     }
 
@@ -53,6 +56,10 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
             binding.apply {
                 toolbarSpace.setNavigationOnClickListener {
                     findNavController().navigateUp()
+                    activity?.supportFragmentManager?.popBackStack()
+                }
+                if (!title.isNullOrEmpty()) {
+                    toolbarSpace.title = title
                 }
 
                 webView.settings.javaScriptEnabled = true
@@ -62,7 +69,7 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
                         request: WebResourceRequest?
                     ): Boolean {
                         url?.let {
-                            webView.loadUrl(it)
+                            view?.loadUrl(it)
                         }
                         return true
                     }
