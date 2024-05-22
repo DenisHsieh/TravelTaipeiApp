@@ -1,14 +1,15 @@
-package com.example.traveltaipeiapp.feature.main.ui.recylerview
+package com.example.traveltaipeiapp.feature.main.ui.recylerview.adaptor
 
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.traveltaipeiapp.api.model.NewsItem
 import com.example.traveltaipeiapp.databinding.ListItemNewsBinding
 
-class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class NewsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val TAG = this.javaClass.simpleName
 
@@ -40,10 +41,21 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     newsTitleTv.text = item.title
                     newsContentTv.text = item.description
                 }
+                holder.binding.newsItem.setOnClickListener {
+                    clickListener.onItemClick(holder.binding.newsItem, position)
+                }
             }
         }
     }
 
     override fun getItemCount(): Int = dataList.size
+
+    fun getNewsItemAtPosition(position: Int): NewsItem {
+        return dataList[position]
+    }
+
+    interface ClickListener {
+        fun onItemClick(v: View, position: Int)
+    }
 }
 

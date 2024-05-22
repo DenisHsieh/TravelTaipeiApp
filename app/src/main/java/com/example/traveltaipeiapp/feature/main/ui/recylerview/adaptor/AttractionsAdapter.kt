@@ -1,4 +1,4 @@
-package com.example.traveltaipeiapp.feature.main.ui.recylerview
+package com.example.traveltaipeiapp.feature.main.ui.recylerview.adaptor
 
 import android.annotation.SuppressLint
 import android.util.Log

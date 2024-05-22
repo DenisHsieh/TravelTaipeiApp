@@ -3,27 +3,24 @@ package com.example.traveltaipeiapp.feature.main.ui
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.ContextMenu
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.DialogFragment
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.example.traveltaipeiapp.R
+import com.example.traveltaipeiapp.api.ApiService
 import com.example.traveltaipeiapp.api.model.AttractionItem
 import com.example.traveltaipeiapp.api.model.NewsItem
 import com.example.traveltaipeiapp.common.BaseFragment
 import com.example.traveltaipeiapp.common.getLocalString
 import com.example.traveltaipeiapp.databinding.FragmentMainBinding
 import com.example.traveltaipeiapp.feature.main.ui.MainActivity.Companion.mainRepository
-import com.example.traveltaipeiapp.feature.main.ui.recylerview.AttractionsAdapter
-import com.example.traveltaipeiapp.feature.main.ui.recylerview.NewsAdapter
+import com.example.traveltaipeiapp.feature.main.ui.recylerview.adaptor.AttractionsAdapter
+import com.example.traveltaipeiapp.feature.main.ui.recylerview.adaptor.NewsAdapter
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModel
 import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModelFactory
 import com.example.traveltaipeiapp.util.LanguageUtil
@@ -38,6 +35,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override val model: MainViewModel by activityViewModels{
         MainViewModelFactory(mainRepository)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,7 +82,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     override fun initViews() {
-        newsAdapter = NewsAdapter()
+        newsAdapter = NewsAdapter(object : NewsAdapter.ClickListener {
+            override fun onItemClick(v: View, position: Int) {
+                val newsItem = newsAdapter?.getNewsItemAtPosition(position)
+                if (newsItem != null) {
+                    navigateToWebViewFragment(newsItem.url)
+                }
+            }
+
+        })
         attractionsAdapter = AttractionsAdapter()
 
         val layoutManager01 = LinearLayoutManager(this.context)
@@ -104,6 +113,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             toolbarSpace.setTitle(requireContext().getLocalString(R.string.app_name))
             latestNewsBtn.text = requireContext().getLocalString(R.string.latest_news)
             attractionsBtn.text = requireContext().getLocalString(R.string.travel_attractions)
+
+            latestNewsBtn.setOnClickListener {
+                showProgressBar()
+                val apiService = (activity as MainActivity).apiService
+                getNewsData(apiService)
+            }
+            attractionsBtn.setOnClickListener {
+                showProgressBar()
+                val apiService = (activity as MainActivity).apiService
+                getAttractionsData(apiService)
+            }
         }
     }
 
@@ -113,7 +133,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         model.newsLd.observe(viewLifecycleOwner) { item ->
             val newsDataList = item!!.data
             if (newsDataList.isNotEmpty()) {
-                newsAdapter?.dataList = getNewsData(newsDataList)
+                newsAdapter?.dataList = handleNewsData(newsDataList)
+                hideProgressBar()
+            } else {
+                newsAdapter?.dataList = handleNewsData(emptyList())
                 hideProgressBar()
             }
         }
@@ -125,17 +148,29 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
             val attractionsDataList = item.data
             if (attractionsDataList.isNotEmpty()) {
-                attractionsAdapter?.dataList = getAttractionsData(attractionsDataList)
+                attractionsAdapter?.dataList = handleAttractionsData(attractionsDataList)
                 hideProgressBar()
             }
         }
 
         val apiService = (activity as MainActivity).apiService
+        getNewsData(apiService)
+        getAttractionsData(apiService)
+    }
+
+    private fun getNewsData(apiService: ApiService) {
         model.getNewsData(apiService)
+    }
+
+    private fun getAttractionsData(apiService: ApiService) {
         model.getAttractionsData(apiService)
     }
 
-    private fun getNewsData(newsDataList: List<NewsItem>): List<NewsItem> {
+    private fun handleNewsData(newsDataList: List<NewsItem>): List<NewsItem> {
+        if (newsDataList.isEmpty()) {
+            return listOf(NewsItem(title = "No Data", description = "No Data"))
+        }
+
         val data0 = newsDataList[0].apply {
             title = title.substring(0, 20) + "..."
             description = description.trim().substring(0, 70) + "..."
@@ -151,7 +186,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         return mutableListOf(data0, data1, data2)
     }
 
-    private fun getAttractionsData(attractionsDataList: List<AttractionItem>): List<AttractionItem> {
+    private fun handleAttractionsData(attractionsDataList: List<AttractionItem>): List<AttractionItem> {
         val data0 = attractionsDataList[2].apply {
             introduction = introduction.trim().substring(0, 50) + "..."
         }
@@ -170,6 +205,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private fun hideProgressBar() {
         binding.progressBar.visibility = View.GONE
+    }
+
+    fun navigateToWebViewFragment(url: String) {
+        if (url.isNotBlank()) {
+            val bundle = bundleOf("url" to url)
+            findNavController().navigate(R.id.action_mainFragment_to_webviewFragment, bundle)
+        }
     }
 
 }
