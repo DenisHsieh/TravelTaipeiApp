@@ -5,3 +5,5 @@
 * 非同步：Coroutine
 * 網路：Retrofit
 * 圖片：Glide
+## Demo
+* https://youtu.be/tJIVx7QRBXE
