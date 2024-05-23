@@ -24,8 +24,10 @@ import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModelFactory
 class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
 
     private val TAG = this.javaClass.simpleName
-    private var url: String? = "https://www.google.com.tw/"
-    private var title: String? = ""
+    companion object {
+        private var url: String = "https://www.google.com.tw/"
+        private var title: String = ""
+    }
 
     override val model: MainViewModel by activityViewModels{
         MainViewModelFactory(mainRepository)
@@ -40,9 +42,12 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        url = arguments?.getString("url")
-        title = arguments?.getString("title", "")
-        Log.d(TAG, "onCreate: ${url}")
+        arguments?.let {
+            url = it.getString("url", "https://www.google.com.tw/")
+            title = it.getString("title", "")
+            Log.d(TAG, "onCreate: $url")
+            Log.d(TAG, "onCreate: $title")
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,42 +57,40 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun initViews() {
-        if (url != null) {
-            binding.apply {
-                toolbarSpace.setNavigationOnClickListener {
-                    findNavController().navigateUp()
-                    activity?.supportFragmentManager?.popBackStack()
-                }
-                if (!title.isNullOrEmpty()) {
-                    toolbarSpace.title = title
-                }
+        binding.apply {
+            toolbarSpace.setNavigationOnClickListener {
+                findNavController().navigateUp()
+                activity?.supportFragmentManager?.popBackStack()
+            }
+            if (title.isNotEmpty()) {
+                toolbarSpace.title = title
+            }
 
-                webView.settings.javaScriptEnabled = true
-                webView.setWebViewClient(object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView?,
-                        request: WebResourceRequest?
-                    ): Boolean {
-                        url?.let {
-                            view?.loadUrl(it)
-                        }
-                        return true
+            webView.settings.javaScriptEnabled = true
+            webView.setWebViewClient(object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    url.let {
+                        view?.loadUrl(it)
                     }
-
-                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                        super.onPageStarted(view, url, favicon)
-                    }
-
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        super.onPageFinished(view, url)
-                        hideProgressBar()
-                    }
-                })
-
-                url?.let {
-                    Log.d(TAG, "webView: load url")
-                    webView.loadUrl(it)
+                    return true
                 }
+
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    hideProgressBar()
+                }
+            })
+
+            url.let {
+                Log.d(TAG, "webView: load url")
+                webView.loadUrl(it)
             }
         }
     }
@@ -103,6 +106,5 @@ class WebviewFragment : BaseFragment<FragmentWebviewBinding>() {
     private fun hideProgressBar() {
         binding.progressBar.visibility = View.GONE
     }
-
 
 }

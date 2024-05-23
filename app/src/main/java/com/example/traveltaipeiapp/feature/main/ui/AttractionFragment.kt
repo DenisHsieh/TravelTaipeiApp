@@ -18,13 +18,15 @@ import com.example.traveltaipeiapp.feature.main.viewmodel.MainViewModelFactory
 class AttractionFragment : BaseFragment<FragmentAttractionBinding>() {
 
     private val TAG = this.javaClass.simpleName
-    private var name:String? = ""
-    private var imageSrc: String? = ""
-    private var openTime: String? = ""
-    private var address: String? = ""
-    private var tel: String? = ""
-    private var website: String? = ""
-    private var description: String? = ""
+    companion object {
+        private var name: String = ""
+        private var imageSrc: String = ""
+        private var openTime: String = ""
+        private var address: String = ""
+        private var tel: String = ""
+        private var website: String = ""
+        private var description: String = ""
+    }
 
     override val model: MainViewModel by activityViewModels{
         MainViewModelFactory(mainRepository)
@@ -32,13 +34,15 @@ class AttractionFragment : BaseFragment<FragmentAttractionBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        name = arguments?.getString("name")
-        imageSrc = arguments?.getString("imageSrc")
-        openTime = arguments?.getString("openTime")
-        address = arguments?.getString("address")
-        tel = arguments?.getString("tel")
-        website = arguments?.getString("website")
-        description = arguments?.getString("description")
+        arguments?.let {
+            name = it.getString("name", "")
+            imageSrc = it.getString("imageSrc", "")
+            openTime = it.getString("openTime", "")
+            address = it.getString("address", "")
+            tel = it.getString("tel", "")
+            website = it.getString("website", "")
+            description = it.getString("description", "")
+        }
     }
 
     override fun inflateLayout(
@@ -50,12 +54,18 @@ class AttractionFragment : BaseFragment<FragmentAttractionBinding>() {
 
     override fun initViews() {
         binding.apply {
-            toolbarSpace.setOnClickListener {
-                findNavController().navigateUp()
+            toolbarSpace.apply {
+                title = name
+                setOnClickListener {
+                    findNavController().navigateUp()
+                }
             }
-            toolbarSpace.title = name
 
-            if (!imageSrc.isNullOrEmpty()) {
+            websiteCardView.setOnClickListener {
+                navigateToWebViewFragment(binding.websiteTv.text.toString(), binding.toolbarSpace.title.toString())
+            }
+
+            if (imageSrc.isNotEmpty()) {
                 Glide.with(requireContext())
                     .load(imageSrc)
                     .placeholder(R.mipmap.ic_launcher)
@@ -67,17 +77,11 @@ class AttractionFragment : BaseFragment<FragmentAttractionBinding>() {
                     .load(placeholderUrl)
                     .into(attractionPhotoIv)
             }
-
-            openTimeTv.text = openTime
-            addressTv.text = address
-            telTv.text = tel
-            websiteTv.text = website
-            descriptionTv.text = description
-
-        }
-
-        binding.websiteCardView.setOnClickListener {
-            navigateToWebViewFragment(binding.websiteTv.text.toString(), binding.toolbarSpace.title.toString())
+            openTimeTv.text = openTime.ifBlank { "No Data" }
+            addressTv.text = address.ifBlank { "No Data" }
+            telTv.text = tel.ifBlank { "No Data" }
+            websiteTv.text = website.ifBlank { "No Data" }
+            descriptionTv.text = description.ifBlank { "No Data" }
         }
     }
 

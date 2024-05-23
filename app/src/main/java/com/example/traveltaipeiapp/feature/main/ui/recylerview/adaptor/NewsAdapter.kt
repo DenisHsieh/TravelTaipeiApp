@@ -3,11 +3,10 @@ package com.example.traveltaipeiapp.feature.main.ui.recylerview.adaptor
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.traveltaipeiapp.api.model.NewsItem
-import com.example.traveltaipeiapp.common.ClickListener
+import com.example.traveltaipeiapp.Listener.ClickListener
 import com.example.traveltaipeiapp.databinding.ListItemNewsBinding
 
 class NewsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -39,8 +38,21 @@ class NewsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<Recyc
             val currentItem: NewsItem? = dataList.getOrNull(position)
             currentItem?.let { item ->
                 holder.binding.apply {
-                    newsTitleTv.text = item.title
-                    newsContentTv.text = item.description
+
+                    newsTitleTv.text = item.title.let {
+                        if (it.length > 20) {
+                            it.trim().substring(0, 20).plus("...")
+                        } else {
+                            it
+                        }
+                    }
+                    newsContentTv.text = item.description.let {
+                        if (it.length > 70) {
+                            it.trim().substring(0, 20).plus("...")
+                        } else {
+                            it
+                        }
+                    }
                 }
                 holder.binding.newsItem.setOnClickListener {
                     clickListener.onItemClick(holder.binding.newsItem, position)

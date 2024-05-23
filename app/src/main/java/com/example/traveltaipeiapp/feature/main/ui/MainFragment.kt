@@ -16,7 +16,7 @@ import com.example.traveltaipeiapp.api.ApiService
 import com.example.traveltaipeiapp.api.model.AttractionItem
 import com.example.traveltaipeiapp.api.model.NewsItem
 import com.example.traveltaipeiapp.common.BaseFragment
-import com.example.traveltaipeiapp.common.ClickListener
+import com.example.traveltaipeiapp.Listener.ClickListener
 import com.example.traveltaipeiapp.common.getLocalString
 import com.example.traveltaipeiapp.databinding.FragmentMainBinding
 import com.example.traveltaipeiapp.feature.main.ui.MainActivity.Companion.mainRepository
@@ -36,27 +36,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override val model: MainViewModel by activityViewModels{
         MainViewModelFactory(mainRepository)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.toolbarSpace.inflateMenu(R.menu.main)
-        binding.toolbarSpace.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_change_language -> {
-                    changeLanguage()
-                    true
-                }
-                else -> false
-            }
-        }
-
-        showProgressBar()
     }
 
     override fun changeLanguage() {
@@ -83,17 +62,33 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     override fun initViews() {
+        // region menuItem
+        binding.apply {
+            toolbarSpace.inflateMenu(R.menu.main)
+            toolbarSpace.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_change_language -> {
+                        changeLanguage()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+        // endregion
+
+        // region recyclerView
         newsAdapter = NewsAdapter(object : ClickListener {
-            override fun onItemClick(v: View, position: Int) {
+            override fun onItemClick (v: View, position: Int) {
                 val newsItem = newsAdapter?.getNewsItemAtPosition(position)
                 if (newsItem != null) {
                     navigateToWebViewFragment(newsItem.url)
                 }
             }
-
         })
+
         attractionsAdapter = AttractionsAdapter(object : ClickListener {
-            override fun onItemClick(v: View, position: Int) {
+            override fun onItemClick (v: View, position: Int) {
                 val attractionItem = attractionsAdapter?.getNewsItemAtPosition(position)
                 if (attractionItem != null) {
                     navigateToAttractionFragment(attractionItem)
@@ -133,6 +128,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 getAttractionsData(apiService)
             }
         }
+        // endregion
+
+        showProgressBar()
     }
 
     override fun initObserve() {
@@ -161,9 +159,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
         }
 
+        // region execute APIs
         val apiService = (activity as MainActivity).apiService
         getNewsData(apiService)
         getAttractionsData(apiService)
+        // endregion
     }
 
     private fun getNewsData(apiService: ApiService) {
@@ -179,31 +179,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             return listOf(NewsItem(title = "No Data", description = "No Data"))
         }
 
-        val data0 = newsDataList[0].apply {
-            title = title.substring(0, 20) + "..."
-            description = description.trim().substring(0, 70) + "..."
-        }
-        val data1 = newsDataList[1].apply {
-            title = title.substring(0, 20) + "..."
-            description = description.trim().substring(0, 70) + "..."
-        }
-        val data2 = newsDataList[2].apply {
-            title = title.substring(0, 20) + "..."
-            description = description.trim().substring(0, 70) + "..."
-        }
+        val data0 = newsDataList[0]
+        val data1 = newsDataList[1]
+        val data2 = newsDataList[2]
         return mutableListOf(data0, data1, data2)
     }
 
     private fun handleAttractionsData(attractionsDataList: List<AttractionItem>): List<AttractionItem> {
-        val data0 = attractionsDataList[2].apply {
-            introduction = introduction.trim().substring(0, 50) + "..."
-        }
-        val data1 = attractionsDataList[3].apply {
-            introduction = introduction.trim().substring(0, 50) + "..."
-        }
-        val data2 = attractionsDataList[11].apply {
-            introduction = introduction.trim().substring(0, 50) + "..."
-        }
+        val data0 = attractionsDataList[2]
+        val data1 = attractionsDataList[3]
+        val data2 = attractionsDataList[11]
         return mutableListOf(data0, data1, data2)
     }
 
@@ -227,16 +212,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     private fun getBundleData(item: AttractionItem): Bundle {
-        val imageSrc = if (item.images.isNotEmpty()) {
-            item.images[0].src
-        } else {
+        val imageSrc = if (item.images.isEmpty()) {
             ""
+        } else {
+            item.images[0].src
         }
 
-        val website = if (item.links.isNotEmpty()) {
-            item.links[0].src
-        } else {
+        val website = if (item.links.isEmpty()) {
             ""
+        } else {
+            item.links[0].src
         }
 
         return bundleOf(
@@ -246,7 +231,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             "address" to item.address,
             "tel" to item.tel,
             "website" to website,
-            "description" to item.introduction)
+            "description" to item.introduction
+        )
     }
 
 }

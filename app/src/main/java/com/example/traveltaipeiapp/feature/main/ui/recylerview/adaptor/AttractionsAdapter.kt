@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.traveltaipeiapp.R
 import com.example.traveltaipeiapp.api.model.AttractionItem
-import com.example.traveltaipeiapp.common.ClickListener
+import com.example.traveltaipeiapp.Listener.ClickListener
 import com.example.traveltaipeiapp.databinding.ListItemAttractionsBinding
 
 class AttractionsAdapter(val clickListener: ClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -41,8 +41,8 @@ class AttractionsAdapter(val clickListener: ClickListener) : RecyclerView.Adapte
             val currentItem: AttractionItem? = dataList.getOrNull(position)
             currentItem?.let { item ->
                 holder.binding.apply {
-                    attractionName.text = item.name
-                    attractionIntro.text = item.introduction
+                    attractionName.text = item.name.trim()
+                    attractionIntro.text = item.introduction.trim().substring(0, 50).plus("...")
 
                     if (item.images.isNotEmpty()) {
                         val photoUrl = item.images[0].src

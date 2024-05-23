@@ -24,7 +24,8 @@ class MainViewModel(
         SharedPreferencesUtil.putAppLanguage(lang)
     }
 
-    val newsLd = SingleLiveEventV2<News?>()
+    private val _newsLd = SingleLiveEventV2<News?>()
+    val newsLd: MutableLiveData<News?> = _newsLd
     fun getNewsData(apiService: ApiService) = viewModelScope.launch(dispatcher) {
             Log.d(TAG, "getNewsData...")
 
@@ -32,7 +33,7 @@ class MainViewModel(
             if (response.isSuccessful) {
                 val newsData = response.body()
                 // update liveData
-                newsLd.postValue(newsData)
+                _newsLd.postValue(newsData)
             } else {
                 Log.e(TAG, "getNewsData: something went wrong!")
             }
@@ -46,6 +47,7 @@ class MainViewModel(
         val response = mainRepository.getAttractionsData(LanguageUtil.getApiLanguage(), apiService)
         if (response.isSuccessful) {
             val attractionsData = response.body()
+            // update liveData
             _attractionsLd.postValue(attractionsData)
         } else {
             Log.e(TAG, "getAttractionsData: something went wrong!")
